@@ -1,0 +1,52 @@
+version: '3.7'
+services:
+    micro_01:
+        image: laravel-app
+        build:
+            args:
+                user: adsonsouza
+                uid: 1000
+            context: ./
+            dockerfile: Dockerfile
+        restart: unless-stopped
+        working_dir: /var/www/
+        volumes:
+            - ./:/var/www
+        networks:
+            - microservice
+        depends_on:
+            - micro_01_mysql
+            - micro_01-redis
+    micro_01_nginx:
+        image: nginx:alpine
+        restart: unless-stopped
+        ports:
+            - 8000:80
+            - 443:443
+        volumes:
+            - ./:/var/www
+            - ./.docker/nginx/:/etc/nginx/conf.d/
+        networks:
+            - microservice
+    micro_01_mysql:
+        platform: linux/x86_64
+        image: mysql:8.0.26
+        command: --innodb-use-native-aio=0
+        restart: unless-stopped
+        ports:
+            - "3306:3306"
+        volumes:
+            - "./.docker/dbdata:/var/lib/mysql"
+        environment:
+            MYSQL_DATABASE: ${DB_DATABASE}
+            MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+            MYSQL_PASSWORD: ${DB_PASSWORD}
+        networks:
+            - microservice
+    micro_01-redis:
+        image: redis:alpine
+        expose:
+            - 6379
+networks:
+    microservice:
+        driver: bridge
