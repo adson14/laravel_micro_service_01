@@ -7,7 +7,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\Response;
 
-class CategoryRequest extends FormRequest
+class CompanyUpdateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,12 +24,15 @@ class CategoryRequest extends FormRequest
      *
      * @return array
      */
-    public function rules(): array
+    public function rules()
     {
+        $identificadorUuid = $this->company;
+
         return [
-            'title' => 'required|min:3|max:100|unique:categories',
-            'description' => 'required|min:3|max:255',
-            'color' => 'required|min:3|max:10'
+            'name' => "min:3|max:100|unique:companies,name,{$identificadorUuid},uuid",
+            'phone' => "min:3|max:12|unique:companies,phone,{$identificadorUuid},uuid",
+            'whatsapp' => "min:3|max:12|unique:companies,whatsapp,{$identificadorUuid},uuid",
+            'email' => "email|unique:companies, email,{$identificadorUuid},uuid",
         ];
     }
 

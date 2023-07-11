@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\CategoryRequest;
+use App\Http\Requests\CategoryCreateRequest;
+use App\Http\Requests\CategoryUpdateRequest;
 use App\Http\Resources\CategoryResource;
 use App\Models\Category;
 
@@ -26,12 +27,10 @@ class CategoryController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param CategoryCreateRequest $request
+     * @return CategoryResource
      */
-    public function store(CategoryRequest $request)
+    public function store(CategoryCreateRequest $request)
     {
         $category = $this->repository->create($request->validated());
         return new CategoryResource($category);
@@ -40,34 +39,37 @@ class CategoryController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  string  $url
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($url)
     {
-        //
+        $category = $this->repository->where('url',$url)->firstOrFail();
+        return new CategoryResource($category);
     }
 
     /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param CategoryUpdateRequest $request
+     * @param $url
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function update(CategoryRequest $request, $id)
+    public function update(CategoryUpdateRequest $request, $url)
     {
-        //
+        $category = $this->repository->where('url',$url)->firstOrFail();
+        $category->update($request->validated());
+        return response()->json(['message'=>'Success']);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param  string  $url
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy($url)
     {
-        //
+        $category = $this->repository->where('url',$url)->firstOrFail();
+        $category->delete();
+        return response()->json([],204);
     }
 }
