@@ -28,9 +28,9 @@ class CategoryUpdateRequest extends FormRequest
     {
         $url = $this->segment(2);
         return [
-            'title' => "min:3|max:100|unique:categories,title,{$url},url",
-            'description' => 'min:3|max:255',
-            'color' => 'min:3|max:10'
+            'title' => "required|min:3|max:100|unique:categories,title,{$url},url",
+            'description' => 'required|min:3|max:255',
+            'color' => 'required|min:3|max:10'
         ];
     }
 
